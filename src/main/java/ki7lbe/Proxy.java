@@ -27,19 +27,22 @@ public class Proxy {
                 .withReactor(reactor)
                 .withBindAddress(localAddress)
                 .withConnectAddress(remoteAddress)
-                .withIncomingTransformFilterFactory((addr) -> new LoggingFilter(localAddress, "client", LoggingFilter.Level.DEBUG))
-                .withOutgoingTransformFilterFactory((addr) -> new LoggingFilter(remoteAddress, "server", LoggingFilter.Level.DEBUG))
+                //.withIncomingTransformFilterFactory((addr) -> new LoggingFilter(localAddress, "client", LoggingFilter.Level.DEBUG))
+                //.withOutgoingTransformFilterFactory((addr) -> new LoggingFilter(remoteAddress, "server", LoggingFilter.Level.DEBUG))
                 .buildAndOpen();
 
         /* https://github.com/NetCrusherOrg/netcrusher-java/blob/master/samples/sample-datagram-rfc868/src/test/java/org/netcrusher/DatagramCrusherRFC868Test.java */
+        while (crusher.isOpen()) {
+           //System.out.println("crusher loop");
+            //crusher.freeze();
 
-        //while (crusher.isOpen()) {
-            System.out.println("crusher");
-        //}
+            //crusher.unfreeze();
+        }
 
         System.out.println("crusher closed");
         crusher.close();
         reactor.close();
+
     }
 
     private static void logParams(String[] params) {

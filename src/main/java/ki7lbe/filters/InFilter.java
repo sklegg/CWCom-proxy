@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 public class InFilter implements TransformFilter {
     @Override
     public void transform(ByteBuffer byteBuffer) {
-
+        System.out.println("inFilter");
+        if (byteBuffer != null) System.out.println(byteBuffer.position());
     }
 }
