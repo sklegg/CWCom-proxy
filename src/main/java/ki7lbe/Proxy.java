@@ -1,9 +1,5 @@
 package ki7lbe;
 
-import org.netcrusher.core.filter.LoggingFilter;
-import org.netcrusher.core.reactor.NioReactor;
-import org.netcrusher.datagram.DatagramCrusher;
-import org.netcrusher.datagram.DatagramCrusherBuilder;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -16,37 +12,17 @@ public class Proxy {
         InetSocketAddress localAddress = new InetSocketAddress(args[0], Integer.parseInt(args[1]));
         InetSocketAddress remoteAddress = new InetSocketAddress(args[2], Integer.parseInt(args[3]));
 
-        NioReactor reactor;
+        ProxyThread localThread = new ProxyThread(localAddress.getPort());
+        localThread.run();
 
-        try {
-            reactor = new NioReactor();
-        } catch (IOException exception) {
-            return;
-        }
-        DatagramCrusher crusher = DatagramCrusherBuilder.builder()
-                .withReactor(reactor)
-                .withBindAddress(localAddress)
-                .withConnectAddress(remoteAddress)
-                //.withIncomingTransformFilterFactory((addr) -> new LoggingFilter(localAddress, "client", LoggingFilter.Level.DEBUG))
-                //.withOutgoingTransformFilterFactory((addr) -> new LoggingFilter(remoteAddress, "server", LoggingFilter.Level.DEBUG))
-                .buildAndOpen();
-
-        /* https://github.com/NetCrusherOrg/netcrusher-java/blob/master/samples/sample-datagram-rfc868/src/test/java/org/netcrusher/DatagramCrusherRFC868Test.java */
-        while (crusher.isOpen()) {
-           //System.out.println("crusher loop");
-            //crusher.freeze();
-
-            //crusher.unfreeze();
-        }
-
-        System.out.println("crusher closed");
-        crusher.close();
-        reactor.close();
+        ProxyThread remoteThread = new ProxyThread(remoteAddress.getPort());
+        remoteThread.run();
 
     }
 
     private static void logParams(String[] params) {
         // TODO: use logger instead
+
         System.out.print("-- IN --");
         System.out.print("host: " + params[0] + '\t');
         System.out.print("port: " + params[1]);
